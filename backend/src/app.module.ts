@@ -4,6 +4,8 @@ import {ConfigModule} from "@nestjs/config";
 import * as path from "node:path";
 
 import {configProvider} from "./app.config.provider";
+import { FilmsController } from './films/films.controller';
+import { OrderController } from './order/order.controller';
 
 @Module({
   imports: [
@@ -13,7 +15,7 @@ import {configProvider} from "./app.config.provider";
       }),
       // @todo: Добавьте раздачу статических файлов из public
   ],
-  controllers: [],
+  controllers: [FilmsController, OrderController],
   providers: [configProvider],
 })
 export class AppModule {}
