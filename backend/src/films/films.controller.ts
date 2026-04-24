@@ -4,10 +4,10 @@ import { Controller, Get, Param } from '@nestjs/common';
 export class FilmsController {
   @Get()
   findAll(): string {
-    return 'Этот метод возвращает список фильмов';
+    return films;
   }
   @Get(':id/schedule')
   find(@Param('id') id: string): string {
-    return `Этот метод вернёт данные фильма с id ${id}`;
+    return film;
   }
 }
