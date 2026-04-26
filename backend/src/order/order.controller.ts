@@ -5,6 +5,6 @@ import { CreateOrderDto } from './dto/order.dto';
 export class OrderController {
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
-    const name = body?.name;
+    const name = createOrderDto.film;
   }
 }
