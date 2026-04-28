@@ -12,7 +12,7 @@ export class FilmsService {
   }
 
   async getScheduleById(id: string): Promise<GetScheduleDTO> {
-    const schedule = await this.filmRepository.getFilmScheduleById(id);
-    return schedule;
+    const response = await this.filmRepository.getFilmScheduleById(id);
+    return response;
   }
 }
