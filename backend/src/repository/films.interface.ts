@@ -1,6 +1,6 @@
 import { Schema, Document } from 'mongoose';
 
-export interface Schedule {
+export interface TSchedule {
   id: string; 
   daytime: string;
   hall: string;
@@ -10,8 +10,7 @@ export interface Schedule {
   taken: string[];
 };
 
-export interface Film extends Document {
-  _id: Schema.Types.ObjectId;
+export interface TFilm {
   id: string;
   rating: number;
   director: string;
@@ -21,5 +20,5 @@ export interface Film extends Document {
   title: string;
   about: string;
   description: string;
-  schedule: Schedule[];
 };
+

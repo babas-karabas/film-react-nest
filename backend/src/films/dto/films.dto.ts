@@ -1,4 +1,4 @@
-export class GetFilmDTO {
+export class FilmDTO {
   id: string;
   rating: number;
   director: string;
@@ -8,8 +8,24 @@ export class GetFilmDTO {
   title: string;
   about: string;
   description: string;
-  };
+};
 
-export class GetFilmScheduleDTO {
-  
-}
+export class GetFilmsDTO {
+  total: number;
+  items: FilmDTO[]
+};
+
+export class ScheduleDTO {
+  id: string; 
+  daytime: string;
+  hall: string;
+  rows: number;
+  seats: number;
+  price: number;
+  taken: string[];
+};
+
+export class GetScheduleDTO {
+  total: number;
+  items: ScheduleDTO[]
+};

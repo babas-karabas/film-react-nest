@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import { Schema, model } from 'mongoose';
 
 export const ScheduleSchema = new Schema({
   id: { type: String, required: true }, 
@@ -10,8 +10,8 @@ export const ScheduleSchema = new Schema({
   taken: { type: [String], required: true },
 });
 
-export const FilmSchema = new mongoose.Schema({
-  _id: { type: mongoose.Schema.Types.ObjectId },
+export const FilmSchema = new Schema({
+  _id: { type: Schema.Types.ObjectId },
   id: { type: String, required: true },
   rating: { type: Number, required: true },
   director: { type: String, required: true },
@@ -24,4 +24,4 @@ export const FilmSchema = new mongoose.Schema({
   schedule: { type: [ScheduleSchema], required: true },
 });
 
-export const Film = mongoose.model('Film', FilmSchema);
+export const Film = model('Film', FilmSchema);
