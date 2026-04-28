@@ -1,17 +1,21 @@
 export class TicketDTO {
-  film: string;
-  session: string;
+  day: string;
   daytime: string;
+  film: string;
+  price: number;
   row: number;
   seat: number;
-  price: number;
+  session: string;
+  time: string;
 };
 
-export class TakenTicketDTO extends TicketDTO {
-  id: string;
-}
-
 export class CreateOrderDto {
+  email: string;
+  phone: string;
+  tickets: TicketDTO[];
+};
+
+export class TakenTicketsDTO {
   total: number;
-  items: TakenTicketDTO[];
+  items: TicketDTO[];
 };

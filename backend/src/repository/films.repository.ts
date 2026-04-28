@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilmDTO, GetFilmsDTO, GetScheduleDTO, ScheduleDTO } from '../films/dto/films.dto';
 import { Film } from './films.schema';
-import { TicketDTO, TakenTicketDTO } from '../order/dto/order.dto';
+import { TicketDTO } from '../order/dto/order.dto';
 import { randomUUID } from 'crypto';
 import { InternalServerErrorException } from '@nestjs/common';
 
@@ -58,18 +58,16 @@ export class FilmsRepository {
     }
   }
 
-  async takeTicket(ticket: TicketDTO): Promise<TakenTicketDTO> {
+  async takeTicket(ticket: TicketDTO): Promise<TicketDTO> {
     const film = await this.filmModel.findOneAndUpdate(
       { id: ticket.film }, 
       { $push: { 'schedule.$[element].taken': `${ticket.row}:${ticket.seat}` }},
       { arrayFilters: [{ 'element.id': ticket.session }], new: true }
     );
     if (film) {
-      return {
-        id: randomUUID(),
-        ...ticket
-      }
+      return ticket;
     } else {
-      throw new InternalServerErrorException('Ошибка при заказе билета');  }
+      throw new InternalServerErrorException('Ошибка при заказе билета');  
+    }
   }
 }

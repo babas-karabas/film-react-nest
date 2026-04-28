@@ -15,6 +15,8 @@ import { OrderModule } from './order/order.module';
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public', 'content', 'afisha'),
+      serveRoot: '/content/afisha',
+      exclude: ['/api/(.*)'],
     }),
     MongooseModule.forRoot('mongodb://localhost:27017/afisha'),
     FilmModule,
