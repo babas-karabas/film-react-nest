@@ -28,6 +28,14 @@ export class OrderService {
           throw new ConflictException('Выбранное место уже занято');
         }
 
+        if (
+          ticket.row > session.rows ||
+          ticket.seat > session.seats ||
+          ticket.row <= 0 ||
+          ticket.seat <= 0
+        ) {
+          throw new NotFoundException('Выбранное место или ряд не существует');
+        }
         return await this.filmRepository.takeTicket(ticket);
       }),
     );
