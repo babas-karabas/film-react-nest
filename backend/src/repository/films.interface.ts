@@ -1,14 +1,12 @@
-import { Schema, Document } from 'mongoose';
-
 export interface TSchedule {
-  id: string; 
+  id: string;
   daytime: string;
   hall: string;
   rows: number;
   seats: number;
   price: number;
   taken: string[];
-};
+}
 
 export interface TFilm {
   id: string;
@@ -20,5 +18,4 @@ export interface TFilm {
   title: string;
   about: string;
   description: string;
-};
-
+}

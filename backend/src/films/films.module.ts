@@ -8,8 +8,12 @@ import { FilmSchema, ScheduleSchema } from '../repository/films.schema';
 @Module({
   controllers: [FilmsController],
   providers: [FilmsService, FilmsRepository],
-  imports: [MongooseModule.forFeature([{ name: 'Film', schema: FilmSchema }, { name: 'Schedule', schema: ScheduleSchema }])],
+  imports: [
+    MongooseModule.forFeature([
+      { name: 'Film', schema: FilmSchema },
+      { name: 'Schedule', schema: ScheduleSchema },
+    ]),
+  ],
   exports: [FilmsRepository],
 })
 export class FilmModule {}
-

@@ -18,7 +18,7 @@ import { OrderModule } from './order/order.module';
       serveRoot: '/content/afisha',
       exclude: ['/api/(.*)'],
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017/afisha'),
+    MongooseModule.forRoot(configProvider.useValue.database.url),
     FilmModule,
     OrderModule,
   ],

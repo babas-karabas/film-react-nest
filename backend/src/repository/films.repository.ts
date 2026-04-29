@@ -1,18 +1,23 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilmDTO, GetFilmsDTO, GetScheduleDTO, ScheduleDTO } from '../films/dto/films.dto';
-import { Film } from './films.schema';
+import {
+  FilmDTO,
+  GetFilmsDTO,
+  GetScheduleDTO,
+  ScheduleDTO,
+} from '../films/dto/films.dto';
+import { Film, FilmDocument } from './films.schema';
 import { TicketDTO } from '../order/dto/order.dto';
-import { randomUUID } from 'crypto';
-import { InternalServerErrorException } from '@nestjs/common';
 
 @Injectable()
 export class FilmsRepository {
-  constructor(@InjectModel('Film') private readonly filmModel: typeof Film) { }
+  constructor(
+    @InjectModel(Film.name) private readonly filmModel: Model<Film>,
+  ) {}
 
-  private getFilmMapperFn(): (Film) => FilmDTO {
-    return root => {
+  private getFilmMapperFn(): (Film: FilmDocument) => FilmDTO {
+    return (root) => {
       return {
         id: root.id,
         rating: root.rating,
@@ -22,31 +27,31 @@ export class FilmsRepository {
         cover: root.cover,
         title: root.title,
         about: root.about,
-        description: root.description
-      }
-    }
+        description: root.description,
+      };
+    };
   }
 
   private getFilmScheduleMapperFn(): (Schedule) => ScheduleDTO {
-    return root => {
+    return (root) => {
       return {
-        id: root.id, 
+        id: root.id,
         daytime: root.daytime,
         hall: root.hall,
         rows: root.rows,
         seats: root.seats,
         price: root.price,
         taken: root.taken,
-      }
-    }
+      };
+    };
   }
 
   async getAllFilms(): Promise<GetFilmsDTO> {
     const films = await this.filmModel.find();
     return {
       total: films.length,
-      items: films.map(this.getFilmMapperFn())
-    }
+      items: films.map(this.getFilmMapperFn()),
+    };
   }
 
   async getFilmScheduleById(id: string): Promise<GetScheduleDTO> {
@@ -54,20 +59,18 @@ export class FilmsRepository {
     const schedule = film.schedule;
     return {
       total: schedule.length,
-      items: schedule.map(this.getFilmScheduleMapperFn())
-    }
+      items: schedule.map(this.getFilmScheduleMapperFn()),
+    };
   }
 
   async takeTicket(ticket: TicketDTO): Promise<TicketDTO> {
-    const film = await this.filmModel.findOneAndUpdate(
-      { id: ticket.film }, 
-      { $push: { 'schedule.$[element].taken': `${ticket.row}:${ticket.seat}` }},
-      { arrayFilters: [{ 'element.id': ticket.session }], new: true }
+    await this.filmModel.findOneAndUpdate(
+      { id: ticket.film },
+      {
+        $push: { 'schedule.$[element].taken': `${ticket.row}:${ticket.seat}` },
+      },
+      { arrayFilters: [{ 'element.id': ticket.session }] },
     );
-    if (film) {
-      return ticket;
-    } else {
-      throw new InternalServerErrorException('Ошибка при заказе билета');  
-    }
+    return ticket;
   }
 }

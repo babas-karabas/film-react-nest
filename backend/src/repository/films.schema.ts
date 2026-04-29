@@ -1,27 +1,52 @@
-import { Schema, model } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Types, HydratedDocument } from 'mongoose';
 
-export const ScheduleSchema = new Schema({
-  id: { type: String, required: true }, 
-  daytime: { type: String, required: true },
-  hall: { type: String, required: true },
-  rows: { type: Number, required: true },
-  seats: { type: Number, required: true },
-  price: { type: Number, required: true },
-  taken: { type: [String], required: true },
-});
+@Schema()
+export class Schedule {
+  @Prop({ required: true })
+  id: string;
+  @Prop({ required: true })
+  daytime: string;
+  @Prop({ required: true })
+  hall: string;
+  @Prop({ required: true })
+  rows: number;
+  @Prop({ required: true })
+  seats: number;
+  @Prop({ required: true })
+  price: number;
+  @Prop({ type: [String], required: true })
+  taken: string[];
+}
 
-export const FilmSchema = new Schema({
-  _id: { type: Schema.Types.ObjectId },
-  id: { type: String, required: true },
-  rating: { type: Number, required: true },
-  director: { type: String, required: true },
-  tags: { type: [String], required: true },
-  image: { type: String, required: true },
-  cover: { type: String, required: true },
-  title: { type: String, required: true },
-  about: { type: String, required: true },
-  description: { type: String, required: true },
-  schedule: { type: [ScheduleSchema], required: true },
-});
+export const ScheduleSchema = SchemaFactory.createForClass(Schedule);
+export type ScheduleDocument = HydratedDocument<Schedule>;
 
-export const Film = model('Film', FilmSchema);
+@Schema()
+export class Film {
+  @Prop({ type: Types.ObjectId })
+  _id: Types.ObjectId;
+  @Prop({ required: true })
+  id: string;
+  @Prop({ required: true })
+  rating: number;
+  @Prop({ required: true })
+  director: string;
+  @Prop({ type: [String], required: true })
+  tags: string[];
+  @Prop({ required: true })
+  image: string;
+  @Prop({ required: true })
+  cover: string;
+  @Prop({ required: true })
+  title: string;
+  @Prop({ required: true })
+  about: string;
+  @Prop({ required: true })
+  description: string;
+  @Prop({ type: [ScheduleSchema], required: true })
+  schedule: Schedule[];
+}
+
+export const FilmSchema = SchemaFactory.createForClass(Film);
+export type FilmDocument = HydratedDocument<Film>;

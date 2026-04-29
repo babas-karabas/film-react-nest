@@ -8,24 +8,24 @@ export class FilmDTO {
   title: string;
   about: string;
   description: string;
-};
+}
 
 export class GetFilmsDTO {
   total: number;
-  items: FilmDTO[]
-};
+  items: FilmDTO[];
+}
 
 export class ScheduleDTO {
-  id: string; 
+  id: string;
   daytime: string;
   hall: string;
   rows: number;
   seats: number;
   price: number;
   taken: string[];
-};
+}
 
 export class GetScheduleDTO {
   total: number;
-  items: ScheduleDTO[]
-};
+  items: ScheduleDTO[];
+}
