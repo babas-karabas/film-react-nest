@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { configProvider } from './app.config.provider';
 import { FilmModule } from './films/films.module';
 import { OrderModule } from './order/order.module';
@@ -19,7 +19,8 @@ import { OrderModule } from './order/order.module';
       serveRoot: '/content/afisha',
       exclude: ['/api/(.*)'],
     }),
-    MongooseModule.forRoot(configProvider.useValue.database.url),
+    TypeOrmModule.forRoot({...configProvider.useValue.database,
+      entities: [] }),
     FilmModule,
     OrderModule,
   ],

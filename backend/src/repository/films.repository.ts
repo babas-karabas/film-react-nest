@@ -10,8 +10,14 @@ import {
 import { Film, FilmDocument } from './films.schema';
 import { TicketDTO } from '../order/dto/order.dto';
 
+interface TFilmsRepository {
+  getAllFilms(): Promise<GetFilmsDTO>;
+  getFilmScheduleById(id: string): Promise<GetScheduleDTO>;
+  takeTicket(ticket: TicketDTO): Promise<TicketDTO>;
+}
+
 @Injectable()
-export class FilmsRepository {
+export class FilmsRepository implements TFilmsRepository {
   constructor(
     @InjectModel(Film.name) private readonly filmModel: Model<Film>,
   ) {}
