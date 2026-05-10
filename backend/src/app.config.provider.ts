@@ -14,11 +14,10 @@ export const configProvider = {
   provide: 'CONFIG',
   useValue: {
     database: {
-      type: 'postgres',
       host: process.env.DATABASE_URL,
-      port: process.env.DATABASE_PORT,
-      username: process.env.USER,
-      password: process.env.PASSWORD,
+      port: Number(process.env.DATABASE_PORT),
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
       synchronize: true,
     },

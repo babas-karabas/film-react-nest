@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { configProvider } from './app.config.provider';
 import { FilmModule } from './films/films.module';
 import { OrderModule } from './order/order.module';
+import { Film, Schedule } from './repository/film.entity';
 
 @Module({
   imports: [
@@ -19,8 +20,16 @@ import { OrderModule } from './order/order.module';
       serveRoot: '/content/afisha',
       exclude: ['/api/(.*)'],
     }),
-    TypeOrmModule.forRoot({...configProvider.useValue.database,
-      entities: [] }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: configProvider.useValue.database.host,
+      port: configProvider.useValue.database.port,
+      username: configProvider.useValue.database.username,
+      password: configProvider.useValue.database.password,
+      database: configProvider.useValue.database.database,
+      entities: [Film, Schedule],
+      synchronize: configProvider.useValue.database.synchronize,
+    }),
     FilmModule,
     OrderModule,
   ],
