@@ -1,14 +1,9 @@
-import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  FilmDTO,
-  GetFilmsDTO,
-  GetScheduleDTO,
-  ScheduleDTO,
-} from '../films/dto/films.dto';
-import { Film, FilmDocument } from './films.schema';
+import { GetFilmsDTO, GetScheduleDTO } from '../films/dto/films.dto';
 import { TicketDTO } from '../order/dto/order.dto';
+import { Repository, DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Film, Schedule } from './film.entity';
 
 interface TFilmsRepository {
   getAllFilms(): Promise<GetFilmsDTO>;
@@ -19,64 +14,65 @@ interface TFilmsRepository {
 @Injectable()
 export class FilmsRepository implements TFilmsRepository {
   constructor(
-    @InjectModel(Film.name) private readonly filmModel: Model<Film>,
+    private dataSource: DataSource,
+    @InjectRepository(Film)
+    private readonly films: Repository<Film>,
+    @InjectRepository(Schedule)
+    private readonly schedule: Repository<Schedule>,
   ) {}
 
-  private getFilmMapperFn(): (Film: FilmDocument) => FilmDTO {
-    return (root) => {
-      return {
-        id: root.id,
-        rating: root.rating,
-        director: root.director,
-        tags: root.tags,
-        image: root.image,
-        cover: root.cover,
-        title: root.title,
-        about: root.about,
-        description: root.description,
-      };
-    };
-  }
-
-  private getFilmScheduleMapperFn(): (Schedule) => ScheduleDTO {
-    return (root) => {
-      return {
-        id: root.id,
-        daytime: root.daytime,
-        hall: root.hall,
-        rows: root.rows,
-        seats: root.seats,
-        price: root.price,
-        taken: root.taken,
-      };
-    };
-  }
-
   async getAllFilms(): Promise<GetFilmsDTO> {
-    const films = await this.filmModel.find();
+    const [films, count] = await this.films.findAndCount();
     return {
-      total: films.length,
-      items: films.map(this.getFilmMapperFn()),
+      total: count,
+      items: films,
     };
   }
 
   async getFilmScheduleById(id: string): Promise<GetScheduleDTO> {
-    const film = await this.filmModel.findOne({ id: id });
-    const schedule = film.schedule;
+    const [seanses, count] = await this.schedule.findAndCountBy({
+      film: {
+        id: id,
+      },
+    });
     return {
-      total: schedule.length,
-      items: schedule.map(this.getFilmScheduleMapperFn()),
+      total: count,
+      items: seanses,
     };
   }
 
   async takeTicket(ticket: TicketDTO): Promise<TicketDTO> {
-    await this.filmModel.findOneAndUpdate(
-      { id: ticket.film },
-      {
-        $push: { 'schedule.$[element].taken': `${ticket.row}:${ticket.seat}` },
-      },
-      { arrayFilters: [{ 'element.id': ticket.session }] },
-    );
-    return ticket;
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const seanse = await this.schedule.findOne({
+        where: {
+          id: ticket.session,
+        },
+        select: ['id', 'taken'],
+      });
+
+      if (!seanse) {
+        await queryRunner.rollbackTransaction();
+        throw new Error('Сеанс не найден');
+      }
+
+      if (seanse.taken.includes(`${ticket.row}:${ticket.seat}`)) {
+        await queryRunner.rollbackTransaction();
+        throw new Error('Выбранное место уже занято');
+      }
+
+      seanse.taken.push(`${ticket.row}:${ticket.seat}`);
+      await queryRunner.manager.save(seanse);
+      await queryRunner.commitTransaction();
+      return ticket;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

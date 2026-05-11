@@ -2,27 +2,24 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  Generated,
   OneToMany,
   ManyToOne,
 } from 'typeorm';
 
-@Entity()
+@Entity({
+  name: 'films',
+})
 export class Film {
-  @PrimaryGeneratedColumn()
-  _id: number;
-
-  @Column()
-  @Generated('uuid')
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column('float')
   rating: number;
 
   @Column()
   director: string;
 
-  @Column()
+  @Column('simple-array')
   tags: string[];
 
   @Column()
@@ -40,24 +37,22 @@ export class Film {
   @Column()
   description: string;
 
-  @OneToMany(() => Schedule, (schedule) => schedule.filmId)
+  @OneToMany(() => Schedule, (schedule) => schedule.film)
   schedule: Schedule[];
 }
 
-@Entity()
+@Entity({
+  name: 'schedules',
+})
 export class Schedule {
-  @PrimaryGeneratedColumn()
-  _id: number;
-
-  @Column()
-  @Generated('uuid')
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
   daytime: string;
 
   @Column()
-  hall: string;
+  hall: number;
 
   @Column()
   rows: number;
@@ -65,12 +60,12 @@ export class Schedule {
   @Column()
   seats: number;
 
-  @Column()
+  @Column('float')
   price: number;
 
-  @Column()
+  @Column('simple-array')
   taken: string[];
 
   @ManyToOne(() => Film, (film) => film.schedule)
-  filmId: Film;
+  film?: Film;
 }
