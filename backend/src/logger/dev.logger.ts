@@ -7,7 +7,7 @@ export class DevLogger implements LoggerService {
 
   constructor() {
     this.logger = winston.createLogger({
-      level: 'info', // базовый уровень логирования
+      level: 'info',
       format: winston.format.combine(
         winston.format.timestamp({
           format: 'YYYY-MM-DD HH:mm:ss',
