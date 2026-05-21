@@ -31,12 +31,12 @@ describe('JsonLogger', () => {
     const expectedOutput = JSON.stringify({
       level: 'error',
       message: errorMessage,
-      stack: stack,
       context: context,
+      stack: stack,
     });
 
     console.error = jest.fn();
-    logger.error(errorMessage, stack, context);
+    logger.error(errorMessage, context, stack);
 
     expect(console.error).toHaveBeenCalledWith(expectedOutput);
   });

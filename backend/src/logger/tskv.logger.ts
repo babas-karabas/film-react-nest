@@ -1,5 +1,6 @@
 import { Injectable, LoggerService } from '@nestjs/common';
 import * as winston from 'winston';
+const { timestamp, printf, errors, combine } = winston.format;
 
 @Injectable()
 export class TSKVLogger implements LoggerService {
@@ -7,82 +8,41 @@ export class TSKVLogger implements LoggerService {
 
   constructor() {
     this.logger = winston.createLogger({
-      format: winston.format.printf((info) =>
-        this.formatTSKV({
-          timestamp: info.timestamp as string,
-          service: info.service as string,
-          level: info.level,
-          message: info.value,
-        }),
+      level: 'info',
+      format: combine(
+        timestamp(),
+        errors({ stack: true }),
+        printf(
+          (info) =>
+            `tskv\t[${info.timestamp}]\tlevel=${info.level}\tservice=${info.service}\tmessage=${info.message}\n`,
+        ),
       ),
       transports: [new winston.transports.File({ filename: 'logs/tskv.log' })],
     });
   }
 
-  private formatTSKV({
-    timestamp,
-    service,
-    level,
-    message,
-  }: {
-    timestamp: string;
-    service: string;
-    level: string;
-    message: unknown;
-  }): string {
-    return `${timestamp} ${service} ${level}=${message}\n`;
+  log(message: any, context?: string) {
+    this.logger.info(message, { service: context || 'unknown' });
   }
 
-  log(message: string, context?: string): void {
-    const timestamp = new Date(Date.now()).toISOString();
-    this.logger.log({
-      timestamp: timestamp,
-      service: context || 'unknown',
-      level: 'info',
-      message: message,
-    });
-  }
-
-  error(message: string, context?: string): void {
-    const timestamp = new Date(Date.now()).toISOString();
-    this.logger.error({
-      timestamp: timestamp,
-      service: context || 'unknown',
-      level: 'error',
-      message: message,
-    });
+  error(message: any, stack?: string, context?: string): void {
+    this.logger.error(message, stack, { service: context || 'unknown' });
   }
 
   warn(message: any, context?: string): void {
-    const timestamp = new Date(Date.now()).toISOString();
-    this.logger.warn({
-      timestamp: timestamp,
-      service: context || 'unknown',
-      level: 'warn',
-      message: message,
-    });
+    this.logger.warn(message, { service: context || 'unknown' });
   }
 
-  debug(message: any, context?: string): void {
+  debug?(message: any, context?: string): void {
     if (process.env.NODE_ENV !== 'production') {
-      const timestamp = new Date(Date.now()).toISOString();
-      this.logger.debug({
-        timestamp: timestamp,
-        service: context || 'unknown',
-        level: 'debug',
-        message: message,
-      });
+      this.logger.debug(message, { service: context || 'unknown' });
     }
   }
 
-  verbose(message: any, context?: string): void {
+  verbose?(message: any, context?: string): void {
     if (process.env.NODE_ENV !== 'production') {
-      const timestamp = new Date(Date.now()).toISOString();
-      this.logger.verbose({
-        timestamp: timestamp,
+      this.logger.verbose(message, {
         service: context || 'unknown',
-        level: 'verbose',
-        message: message,
       });
     }
   }

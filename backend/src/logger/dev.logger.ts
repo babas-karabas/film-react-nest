@@ -1,38 +1,27 @@
 import { Injectable, LoggerService } from '@nestjs/common';
-import * as winston from 'winston';
 
 @Injectable()
 export class DevLogger implements LoggerService {
-  private logger: winston.Logger;
-
-  constructor() {
-    this.logger = winston.createLogger({
-      level: 'info',
-      format: winston.format.combine(
-        winston.format.timestamp({
-          format: 'YYYY-MM-DD HH:mm:ss',
-        }),
-        winston.format.simple(),
-      ),
-      transports: [new winston.transports.Console()],
-    });
+  addTimestamp() {
+    const timestamp = new Date().toISOString();
+    return timestamp;
   }
 
-  log(message: string, context?: string): void {
-    this.logger.info(message, { context });
+  log(message: any, context?: string): void {
+    console.log('log', this.addTimestamp(), message, context);
   }
 
-  error(message: string, stack?: string, context?: string): void {
-    this.logger.error(message, { context, stack });
+  error(message: any, stack?: string, context?: string): void {
+    console.error('error', this.addTimestamp(), message, stack, context);
   }
 
-  warn(message: string): void {
-    this.logger.warn(message);
+  warn(message: any, context?: string): void {
+    console.warn('warn', this.addTimestamp(), message, context);
   }
 
-  debug(message: string): void {
+  debug?(message: any, context?: string): void {
     if (process.env.NODE_ENV !== 'production') {
-      this.logger.debug(message);
+      console.debug('debug', this.addTimestamp(), message, context);
     }
   }
 }

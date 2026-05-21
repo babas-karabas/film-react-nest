@@ -10,7 +10,7 @@ export class JsonLogger implements LoggerService {
     console.log(this.formatMessage('log', message, context));
   }
 
-  error(message: string, stack?: string, context?: string): void {
+  error(message: any, stack?: string, context?: string): void {
     console.error(this.formatMessage('error', message, stack, context));
   }
 
@@ -18,13 +18,13 @@ export class JsonLogger implements LoggerService {
     console.warn(this.formatMessage('warn', message, context));
   }
 
-  debug(message: any, context?: string): void {
+  debug?(message: any, context?: string): void {
     if (process.env.NODE_ENV !== 'production') {
       console.debug(this.formatMessage('debug', message, context));
     }
   }
 
-  verbose(message: any, context?: string): void {
+  verbose?(message: any, context?: string): void {
     if (process.env.NODE_ENV !== 'production') {
       console.log(this.formatMessage('verbose', message, context));
     }

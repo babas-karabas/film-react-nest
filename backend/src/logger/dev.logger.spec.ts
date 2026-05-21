@@ -1,108 +1,103 @@
 import { DevLogger } from './dev.logger';
+import { LoggerService } from '@nestjs/common';
 import {
-  describe,
-  beforeEach,
-  it,
   expect,
+  describe,
+  it,
   jest,
+  beforeEach,
   afterEach,
 } from '@jest/globals';
 
-import * as winston from 'winston';
-
-jest.mock('winston');
-const mockCurrentTime = '2023-10-05 14:30:00';
-
-function checkFormat(call: [string, { timestamp?: string }]) {
-  const timestamp = call[1].timestamp;
-  if (!timestamp) return;
-
-  const expectedPattern = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
-
-  expect(timestamp).toMatch(expectedPattern);
-  expect(timestamp).toBe(mockCurrentTime);
-}
-
 describe('DevLogger', () => {
-  let logger: DevLogger;
-  let winstonLogger: jest.Mocked<winston.Logger>;
+  let logger: LoggerService;
+  const timestamp = '2022-01-01T00:00:00.000Z';
 
   beforeEach(() => {
-    winstonLogger = {
-      info: jest.fn(),
-      error: jest.fn(),
-      warn: jest.fn(),
-      debug: jest.fn(),
-    };
-    (winston.createLogger as jest.Mock).mockReturnValue(winstonLogger);
-
     logger = new DevLogger();
-    global.Date = jest.createMockFromModule('date') as typeof Date;
-    (global.Date as jest.MockedClass<typeof Date>).now.mockReturnValue(
-      new Date(mockCurrentTime).getTime(),
-    );
+
+    const mockDate = new Date(timestamp);
+    jest.spyOn(global, 'Date').mockImplementation(() => mockDate);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
-  describe('log method', () => {
-    it('should call winston logger with info level and context', () => {
-      const message = 'Test message';
-      const context = 'test-context';
+  it('should log a message with timestamp', () => {
+    const level = 'log';
+    const logMessage = 'Test log message';
+    const logContext = 'Test context';
 
-      logger.log(message, context);
+    console.log = jest.fn();
+    logger.log(logMessage, logContext);
 
-      expect(winstonLogger.info).toHaveBeenCalledWith(message, {
-        context: context,
-      });
-      checkFormat(winstonLogger.info.mock.calls[0]);
-    });
+    expect(console.log).toHaveBeenCalledWith(
+      level,
+      timestamp,
+      logMessage,
+      logContext,
+    );
   });
 
-  describe('error method', () => {
-    it('should call winston logger with error level and context', () => {
-      const message = 'Error message';
-      const stack = 'stack-trace';
-      const context = 'error-context';
+  it('should error a message with timestamp', () => {
+    const level = 'error';
+    const errorMessage = 'Test error message';
+    const stack = 'stack trace';
+    const context = 'error context';
 
-      logger.error(message, stack, context);
+    console.error = jest.fn();
+    logger.error(errorMessage, stack, context);
 
-      expect(winstonLogger.error).toHaveBeenCalledWith(message, {
-        context: context,
-        stack: stack,
-      });
-    });
+    expect(console.error).toHaveBeenCalledWith(
+      level,
+      timestamp,
+      errorMessage,
+      stack,
+      context,
+    );
   });
 
-  describe('warn method', () => {
-    it('should call winston logger with warn level', () => {
-      const message = 'Warning message';
+  it('should warn a message with timestamp', () => {
+    const warnMessage = 'Test warn message';
+    const context = 'warn context';
+    const level = 'warn';
 
-      logger.warn(message);
+    console.warn = jest.fn();
+    logger.warn(warnMessage, context);
 
-      expect(winstonLogger.warn).toHaveBeenCalledWith(message);
-    });
+    expect(console.warn).toHaveBeenCalledWith(
+      level,
+      timestamp,
+      warnMessage,
+      context,
+    );
   });
 
-  describe('debug method', () => {
-    it('should call debug method if not in production', () => {
-      process.env.NODE_ENV = 'development';
-      const message = 'Debug message';
+  it('should debug a message with timestamp (non-production environment)', () => {
+    process.env.NODE_ENV = 'development';
+    const debugMessage = 'Test debug message';
+    const context = 'debug context';
+    const level = 'debug';
 
-      logger.debug(message);
+    console.debug = jest.fn();
+    logger.debug(debugMessage, context);
 
-      expect(winstonLogger.debug).toHaveBeenCalledWith(message);
-    });
+    expect(console.debug).toHaveBeenCalledWith(
+      level,
+      timestamp,
+      debugMessage,
+      context,
+    );
+  });
 
-    it('should not call debug method in production', () => {
-      process.env.NODE_ENV = 'production';
-      const message = 'Debug message';
+  it('should not debug a message when NODE_ENV is production', () => {
+    process.env.NODE_ENV = 'production';
+    const debugMessage = 'Test debug message';
 
-      logger.debug(message);
+    console.debug = jest.fn();
+    logger.debug(debugMessage);
 
-      expect(winstonLogger.debug).not.toHaveBeenCalled();
-    });
+    expect(console.debug).not.toHaveBeenCalled();
   });
 });

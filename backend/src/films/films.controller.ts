@@ -11,7 +11,7 @@ export class FilmsController {
 
   @Get()
   public async findAllFilms(): Promise<GetFilmsDTO> {
-    this.logger.log('Sending films...');
+    this.logger.log('Sending films...', 'FilmsController');
     return await this.filmsService.getAllFilms();
   }
 
@@ -19,7 +19,7 @@ export class FilmsController {
   public async findFilmSchedule(
     @Param('id') id: string,
   ): Promise<GetScheduleDTO> {
-    this.logger.log(`Sending the schedule ${id}...`);
+    this.logger.log(`Sending the schedule ${id}...`, 'FilmsController');
     return await this.filmsService.getScheduleById(id);
   }
 }

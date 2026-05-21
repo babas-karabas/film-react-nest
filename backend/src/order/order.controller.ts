@@ -11,7 +11,7 @@ export class OrderController {
 
   @Post()
   public async create(@Body() order: CreateOrderDto): Promise<TakenTicketsDTO> {
-    this.logger.log('Сreating the order...');
+    this.logger.log('Сreating the order...', 'OrderController');
     return await this.orderService.sendOrder(order.tickets);
   }
 }

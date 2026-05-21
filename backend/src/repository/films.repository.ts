@@ -23,15 +23,12 @@ export class FilmsRepository implements TFilmsRepository {
   ) {}
 
   async getAllFilms(): Promise<GetFilmsDTO> {
-    this.logger.log({
-      context: FilmsRepository,
-      message: 'Getting films from the database...',
-    });
+    this.logger.log('Getting films from the database...', 'FilmsRepository');
     const [films, count] = await this.films.findAndCount();
-    this.logger.log({
-      context: FilmsRepository,
-      message: `The films were successfully received from the database. Count: ${count}`,
-    });
+    this.logger.log(
+      `The films were successfully received from the database. Count: ${count}`,
+      'FilmsRepository',
+    );
     return {
       total: count,
       items: films,
@@ -39,19 +36,19 @@ export class FilmsRepository implements TFilmsRepository {
   }
 
   async getFilmScheduleById(id: string): Promise<GetScheduleDTO> {
-    this.logger.log({
-      context: FilmsRepository,
-      message: `Getting the schedule ${id} from the database...`,
-    });
+    this.logger.log(
+      `Getting the schedule ${id} from the database...`,
+      'FilmsRepository',
+    );
     const [seanses, count] = await this.schedule.findAndCountBy({
       film: {
         id: id,
       },
     });
-    this.logger.log({
-      context: FilmsRepository,
-      message: `The schedule was successfully received from the database. Count of seanses: ${count}`,
-    });
+    this.logger.log(
+      `The schedule was successfully received from the database. Count of seanses: ${count}`,
+      'FilmsRepository',
+    );
 
     return {
       total: count,
@@ -60,17 +57,14 @@ export class FilmsRepository implements TFilmsRepository {
   }
 
   async takeTicket(ticket: TicketDTO): Promise<TicketDTO> {
-    this.logger.log({
-      context: FilmsRepository,
-      message: `Ordering ticket for the film ${ticket.film} on the session ${ticket.session} to the seat ${ticket.row}:${ticket.seat} from the database...`,
-    });
+    this.logger.log(
+      `Ordering ticket for the film ${ticket.film} on the session ${ticket.session} to the seat ${ticket.row}:${ticket.seat} from the database...`,
+      'FilmsRepository',
+    );
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    this.logger.log({
-      context: FilmsRepository,
-      message: 'Starting the transaction...',
-    });
+    this.logger.log('Starting the transaction...', 'FilmsRepository');
 
     try {
       const seanse = await this.schedule.findOne({
@@ -92,29 +86,20 @@ export class FilmsRepository implements TFilmsRepository {
 
       seanse.taken.push(`${ticket.row}:${ticket.seat}`);
       await queryRunner.manager.save(seanse);
-      this.logger.log({
-        context: FilmsRepository,
-        message: `The seat ${ticket.row}:${ticket.seat} has been saved as occupied in the database`,
-      });
+      this.logger.log(
+        `The seat ${ticket.row}:${ticket.seat} has been saved as occupied in the database`,
+        'FilmsRepository',
+      );
       await queryRunner.commitTransaction();
-      this.logger.log({
-        context: FilmsRepository,
-        message: 'The transaction is completed',
-      });
+      this.logger.log('The transaction is completed', 'FilmsRepository');
       return ticket;
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      this.logger.log({
-        context: FilmsRepository,
-        message: 'The transaction has been roolbacked',
-      });
+      this.logger.log('The transaction has been roolbacked', 'FilmsRepository');
       throw err;
     } finally {
       await queryRunner.release();
-      this.logger.log({
-        context: FilmsRepository,
-        message: 'The queryRunner has been released',
-      });
+      this.logger.log('The queryRunner has been released', 'FilmsRepository');
     }
   }
 }
