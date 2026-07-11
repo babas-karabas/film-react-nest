@@ -12,8 +12,7 @@ jobs:
       contents: write
     steps:
         - name: set lower case owner name
-          run: /
-            echo "REPO=${OWNER,,}" >>${GITHUB_ENV}
+          run: echo "REPO=${OWNER,,}" >>${GITHUB_ENV}
           env:
             OWNER: '${{ github.repository_owner }}'
             registry: ${{ env.REGISTRY }}
