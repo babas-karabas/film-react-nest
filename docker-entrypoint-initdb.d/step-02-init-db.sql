@@ -21,7 +21,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.films
 (
-    id          uuid default uuid_generate_v4() not null
+    id          uuid default public.uuid_generate_v4() not null
         constraint "PK_697487ada088902377482c970d1"
             primary key,
     rating      double precision                not null,
@@ -38,7 +38,7 @@ ALTER TABLE public.films OWNER TO postgres;
 
 CREATE TABLE public.schedules
 (
-    id       uuid default uuid_generate_v4() not null
+    id       uuid default public.uuid_generate_v4() not null
         constraint "PK_7e33fc2ea755a5765e3564e66dd"
             primary key,
     daytime  varchar                         not null,
@@ -115,8 +115,3 @@ INSERT INTO public.schedules("daytime","filmId","hall","id","price","rows","seat
 INSERT INTO public.schedules("daytime","filmId","hall","id","price","rows","seats","taken") VALUES('2024-06-30T12:00:53+03:00','92b8a2a7-ab6b-4fa9-915b-d27945865e39',0,'9d3d3914-ea59-46a0-80a2-4e320e82956a',350,5,10,'');
 INSERT INTO public.schedules("daytime","filmId","hall","id","price","rows","seats","taken") VALUES('2024-06-30T16:00:53+03:00','92b8a2a7-ab6b-4fa9-915b-d27945865e39',1,'5c68663d-1a71-401c-9214-e79af571c347',350,5,10,'');
 INSERT INTO public.schedules("daytime","filmId","hall","id","price","rows","seats","taken") VALUES('2024-06-30T18:00:53+03:00','92b8a2a7-ab6b-4fa9-915b-d27945865e39',2,'2644a72a-6f17-4c61-a405-9c48bb0ea682',350,5,10,'');
-
-ALTER TABLE ONLY public.schedules ADD CONSTRAINT "PK_7e33fc2ea755a5765e3564e66dd" PRIMARY KEY (id);
-
-ALTER TABLE ONLY public.schedules ADD CONSTRAINT "FK_1c2f5e637713a429f4854024a76" FOREIGN KEY ("filmId")
-  REFERENCES public.films(id);

@@ -20,7 +20,7 @@ services:
     image: dpage/pgadmin4
     container_name: pgadmin4_container
     restart: always
-    ports: 
+    ports:
       - '8080:80'
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
@@ -38,7 +38,7 @@ services:
       VITE_BASE_URL: /
       VITE_API_URL: /api/afisha
       VITE_CDN_URL: /content/afisha
-    volumes: 
+    volumes:
       - frontend_build:/app/dist
 
   backend:
@@ -60,18 +60,18 @@ services:
     restart: on-failure
     networks:
       - internal
-    depends_on: 
+    depends_on:
       - database
 
   server:
     image: 'ghcr.io/${OWNER}/film_server:latest'
     build:
       context: nginx
-    ports: 
+    ports:
       - 80:80
-    volumes: 
+    volumes:
       - frontend_build:/var/www
-    depends_on: 
+    depends_on:
       - frontend
       - backend
     networks:
