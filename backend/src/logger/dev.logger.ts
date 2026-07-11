@@ -7,19 +7,19 @@ export class DevLogger implements LoggerService {
     return timestamp;
   }
 
-  log(message: any, context?: string): void {
+  log(message: string, context?: string): void {
     console.log('log', this.addTimestamp(), message, context);
   }
 
-  error(message: any, stack?: string, context?: string): void {
+  error(message: string, stack?: string, context?: string): void {
     console.error('error', this.addTimestamp(), message, stack, context);
   }
 
-  warn(message: any, context?: string): void {
+  warn(message: string, context?: string): void {
     console.warn('warn', this.addTimestamp(), message, context);
   }
 
-  debug?(message: any, context?: string): void {
+  debug?(message: string, context?: string): void {
     if (process.env.NODE_ENV !== 'production') {
       console.debug('debug', this.addTimestamp(), message, context);
     }

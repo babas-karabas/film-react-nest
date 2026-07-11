@@ -13,18 +13,19 @@ services:
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
       - '5432:5432'
+    restart: on-failure
     networks:
       - internal
 
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin4_container
-    restart: always
     ports:
       - '8080:80'
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    restart: on-failure
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
@@ -38,6 +39,7 @@ services:
       VITE_BASE_URL: /
       VITE_API_URL: /api/afisha
       VITE_CDN_URL: /content/afisha
+    restart: on-failure
     volumes:
       - frontend_build:/app/dist
 
@@ -74,6 +76,7 @@ services:
     depends_on:
       - frontend
       - backend
+    restart: on-failure
     networks:
       - internal
 

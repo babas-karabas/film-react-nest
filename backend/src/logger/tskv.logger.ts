@@ -21,25 +21,25 @@ export class TSKVLogger implements LoggerService {
     });
   }
 
-  log(message: any, context?: string) {
+  log(message: string, context?: string) {
     this.logger.info(message, { service: context || 'unknown' });
   }
 
-  error(message: any, stack?: string, context?: string): void {
+  error(message: string, stack?: string, context?: string): void {
     this.logger.error(message, stack, { service: context || 'unknown' });
   }
 
-  warn(message: any, context?: string): void {
+  warn(message: string, context?: string): void {
     this.logger.warn(message, { service: context || 'unknown' });
   }
 
-  debug?(message: any, context?: string): void {
+  debug?(message: string, context?: string): void {
     if (process.env.NODE_ENV !== 'production') {
       this.logger.debug(message, { service: context || 'unknown' });
     }
   }
 
-  verbose?(message: any, context?: string): void {
+  verbose?(message: string, context?: string): void {
     if (process.env.NODE_ENV !== 'production') {
       this.logger.verbose(message, {
         service: context || 'unknown',
