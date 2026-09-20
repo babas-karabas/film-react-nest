@@ -8,6 +8,7 @@ import { configProvider } from './app.config.provider';
 import { FilmModule } from './films/films.module';
 import { OrderModule } from './order/order.module';
 import { Film, Schedule } from './repository/film.entity';
+import { createLogger } from './logger/logger.factory';
 
 @Module({
   imports: [
@@ -33,6 +34,13 @@ import { Film, Schedule } from './repository/film.entity';
     FilmModule,
     OrderModule,
   ],
-  providers: [configProvider],
+  providers: [
+    configProvider,
+    {
+      provide: 'APP_LOGGER',
+      useFactory: createLogger,
+    },
+  ],
+  exports: ['APP_LOGGER'],
 })
 export class AppModule {}
